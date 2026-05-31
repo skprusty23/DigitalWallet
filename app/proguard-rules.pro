@@ -1,0 +1,16 @@
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep class com.digitalwallet.** { *; }
+-keepclassmembers class * { @com.google.dagger.hilt.android.lifecycle.HiltViewModel *; }
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keep @androidx.room.Dao class *
+-keep class net.sqlcipher.** { *; }
+-dontwarn net.sqlcipher.**
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keep class * extends androidx.work.Worker
+-keep class * extends androidx.work.ListenableWorker
+-keep class com.google.zxing.** { *; }
+-keep class com.google.mlkit.** { *; }
+-keep class androidx.camera.** { *; }
