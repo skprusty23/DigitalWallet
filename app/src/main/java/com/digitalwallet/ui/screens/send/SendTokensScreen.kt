@@ -105,6 +105,10 @@ class SendTokensViewModel @Inject constructor(
         _state.value = s.copy(step = 2, amountError = null)
     }
 
+    fun goToStep1() {
+        _state.value = _state.value.copy(step = 1, amountError = null)
+    }
+
     fun validateAndPrepareConfirm(onReady: () -> Unit) {
         val s = _state.value
         val amt = s.amount.toDoubleOrNull()
@@ -137,7 +141,7 @@ fun SendTokensScreen(
 
     Scaffold(
         topBar = { WalletTopBar(title = if (state.step == 1) "Send — Select Recipient" else "Send — Select Amount", onBack = {
-            if (state.step == 2) viewModel.proceedToStep2()
+            if (state.step == 2) viewModel.goToStep1()
             else onBack()
         }) }
     ) { padding ->

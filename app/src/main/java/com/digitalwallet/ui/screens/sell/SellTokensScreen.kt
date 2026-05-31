@@ -92,8 +92,6 @@ class SellTokensViewModel @Inject constructor(
     }
 }
 
-val exchangeRates = mapOf(CurrencyType.USD to 100.0, CurrencyType.EUR to 110.0, CurrencyType.SSD to 50.0)
-
 @Composable
 private fun DetailRow(label: String, value: String, isBold: Boolean = false) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

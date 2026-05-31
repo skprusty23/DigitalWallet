@@ -324,3 +324,10 @@ fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> U
         }
     }
 }
+
+/** Shared token ↔ fiat exchange rates used by Buy and Sell screens. */
+val exchangeRates = mapOf(
+    CurrencyType.USD to 100.0,
+    CurrencyType.EUR to 110.0,
+    CurrencyType.SSD to 50.0
+)

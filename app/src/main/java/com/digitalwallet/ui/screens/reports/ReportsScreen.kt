@@ -25,10 +25,12 @@ import com.digitalwallet.domain.repository.*
 import com.digitalwallet.ui.components.*
 import com.digitalwallet.ui.theme.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.Month
 import java.time.format.TextStyle
@@ -74,7 +76,7 @@ class ReportsViewModel @Inject constructor(private val transactionRepository: Tr
         _state.value = s.copy(totalSent = sent, totalReceived = received, netFlow = received - sent)
     }
 
-    fun exportCsv(context: android.content.Context): Uri? {
+    suspend fun exportCsv(context: android.content.Context): Uri? {
         val s = _state.value
         val monthTxs = s.allTransactions.filter {
             it.createdAt.month == s.selectedMonth && it.createdAt.year == s.selectedYear
@@ -83,11 +85,13 @@ class ReportsViewModel @Inject constructor(private val transactionRepository: Tr
         monthTxs.forEach { tx ->
             sb.append("${tx.createdAt},${tx.type.name},${tx.counterpartyName},${tx.amount},${tx.currencyType.name},${tx.status.name}\n")
         }
-        return try {
-            val file = File(context.cacheDir, "wallet_report_${s.selectedMonth.name}_${s.selectedYear}.csv")
-            file.writeText(sb.toString())
-            FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-        } catch (e: Exception) { null }
+        return withContext(Dispatchers.IO) {
+            try {
+                val file = File(context.cacheDir, "wallet_report_${s.selectedMonth.name}_${s.selectedYear}.csv")
+                file.writeText(sb.toString())
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            } catch (e: Exception) { null }
+        }
     }
 }
 
@@ -95,6 +99,7 @@ class ReportsViewModel @Inject constructor(private val transactionRepository: Tr
 fun ReportsScreen(onBack: () -> Unit, viewModel: ReportsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var monthDropdown by remember { mutableStateOf(false) }
 
     val months = Month.entries.take(12)
@@ -174,14 +179,16 @@ fun ReportsScreen(onBack: () -> Unit, viewModel: ReportsViewModel = hiltViewMode
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
                         onClick = {
-                            val uri = viewModel.exportCsv(context)
-                            uri?.let {
-                                val intent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/csv"
-                                    putExtra(Intent.EXTRA_STREAM, it)
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            scope.launch {
+                                val uri = viewModel.exportCsv(context)
+                                uri?.let {
+                                    val intent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "text/csv"
+                                        putExtra(Intent.EXTRA_STREAM, it)
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(Intent.createChooser(intent, "Export CSV"))
                                 }
-                                context.startActivity(Intent.createChooser(intent, "Export CSV"))
                             }
                         },
                         modifier = Modifier.weight(1f)

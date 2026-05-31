@@ -39,8 +39,6 @@ data class BuyState(
     val success: String? = null
 )
 
-val exchangeRates = mapOf(CurrencyType.USD to 100.0, CurrencyType.EUR to 110.0, CurrencyType.SSD to 50.0)
-
 @HiltViewModel
 class BuyTokensViewModel @Inject constructor(
     private val walletRepository: WalletRepository,
