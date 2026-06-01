@@ -4,10 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
-enum class CurrencyType(val displayName: String, val symbol: String) {
-    USD("USD Token", "$"),
-    EUR("Euro Token", "€"),
-    SSD("SSD Token", "S")
+enum class CurrencyType(val displayName: String, val symbol: String, val tokenSymbol: String) {
+    USD("USD Token", "$", "USDT"),
+    EUR("Euro Token", "€", "EURC"),
+    SSD("SSD Token", "S", "SSDT")
 }
 
 enum class WalletStatus { ACTIVE, FROZEN, CLOSED }

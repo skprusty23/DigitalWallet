@@ -31,7 +31,7 @@ fun formatTokens(amount: Double, currency: CurrencyType): String {
     val nf = NumberFormat.getNumberInstance(Locale.US)
     nf.minimumFractionDigits = 2
     nf.maximumFractionDigits = 2
-    return "${nf.format(amount)} ${currency.name}"
+    return "${nf.format(amount)} ${currency.tokenSymbol}"
 }
 
 fun formatCurrency(amount: Double): String {
@@ -138,7 +138,7 @@ fun WalletCard(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = wallet.currencyType.symbol + " " + formatCurrency(wallet.balance),
+                    text = formatTokens(wallet.balance, wallet.currencyType),
                     color = Color.White,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold

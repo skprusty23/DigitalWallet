@@ -216,15 +216,21 @@ fun SendTokensScreen(
                                     Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                                 }
                             },
-                            supportingText = state.selectedWallet?.let {
-                                { Text("Balance: ${it.currencyType.symbol} ${formatCurrency(it.balance)}") }
+                            supportingText = state.selectedWallet?.let { w ->
+                                {
+                                    val rate = exchangeRates[w.currencyType] ?: 100.0
+                                    Text("Balance: ${formatTokens(w.balance, w.currencyType)} (${w.currencyType.symbol}${formatCurrency(w.balance / rate)})")
+                                }
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
                         DropdownMenu(expanded = walletDropdownExpanded, onDismissRequest = { walletDropdownExpanded = false }) {
                             state.wallets.forEach { wallet ->
                                 DropdownMenuItem(
-                                    text = { Text("${wallet.name} (${wallet.currencyType.symbol} ${formatCurrency(wallet.balance)})") },
+                                    text = {
+                                        val rate = exchangeRates[wallet.currencyType] ?: 100.0
+                                        Text("${wallet.name} · ${formatTokens(wallet.balance, wallet.currencyType)} (${wallet.currencyType.symbol}${formatCurrency(wallet.balance / rate)})")
+                                    },
                                     onClick = { viewModel.setWallet(wallet); walletDropdownExpanded = false }
                                 )
                             }
