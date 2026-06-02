@@ -137,6 +137,13 @@ fun WalletCard(
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                val cardRate = exchangeRates[wallet.currencyType] ?: 100.0
+                Text(
+                    text = "${wallet.currencyType.symbol}${formatCurrency(wallet.balance / cardRate)}",
+                    color = Color.White.copy(alpha = 0.75f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal
+                )
                 Text(
                     text = formatTokens(wallet.balance, wallet.currencyType),
                     color = Color.White,
@@ -205,14 +212,16 @@ fun TransactionItem(
             )
         }
         Column(horizontalAlignment = Alignment.End) {
+            val txRate = exchangeRates[tx.currencyType] ?: 100.0
+            val fiatVal = tx.amount / txRate
             Text(
-                text = "$amountPrefix${tx.currencyType.symbol}${formatCurrency(tx.amount)}",
+                text = "$amountPrefix${formatCurrency(tx.amount)} ${tx.currencyType.tokenSymbol}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = amountColor
             )
             Text(
-                text = tx.currencyType.name,
+                text = "(${tx.currencyType.symbol}${formatCurrency(fiatVal)})",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

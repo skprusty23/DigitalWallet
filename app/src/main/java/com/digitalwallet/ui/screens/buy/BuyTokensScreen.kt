@@ -156,8 +156,9 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
                 OutlinedTextField(
                     value = state.fiatAmount,
                     onValueChange = { viewModel.setFiatAmount(it) },
-                    label = { Text("Amount to Pay (USD)") },
-                    prefix = { Text("$") },
+                    label = { Text("Fiat Amount to Spend") },
+                    prefix = { Text(wallet?.currencyType?.symbol ?: "$") },
+                    suffix = { Text(wallet?.currencyType?.tokenSymbol ?: "USDT") },
                     isError = state.error != null,
                     modifier = Modifier.fillMaxWidth(), singleLine = true
                 )
@@ -168,9 +169,9 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("Exchange Summary", fontWeight = FontWeight.Bold)
-                            DetailRow("Rate", "1 USD = $rate ${wallet.currencyType.name}")
-                            DetailRow("You Pay", "$ ${formatCurrency(fiat)}")
-                            DetailRow("You Receive", "${wallet.currencyType.symbol} ${formatCurrency(tokensToReceive)} ${wallet.currencyType.name}", isBold = true)
+                            DetailRow("Rate", "1 ${wallet.currencyType.symbol} = ${rate} ${wallet.currencyType.tokenSymbol}")
+                            DetailRow("You Pay", "${wallet.currencyType.symbol}${formatCurrency(fiat)}")
+                            DetailRow("You Receive", "${formatTokens(tokensToReceive, wallet.currencyType)} (${wallet.currencyType.symbol}${formatCurrency(fiat)})", isBold = true)
                         }
                     }
                 }
@@ -199,8 +200,8 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
                                 Text(formatDateTime(p.purchasedAt), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Column(horizontalAlignment = Alignment.End) {
-                                Text("+${p.currencyType.symbol}${formatCurrency(p.tokenAmount)}", color = WalletTeal500, fontWeight = FontWeight.Bold)
-                                Text("Paid: $${formatCurrency(p.fiatAmount)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("+${formatTokens(p.tokenAmount, p.currencyType)}", color = WalletTeal500, fontWeight = FontWeight.Bold)
+                                Text("Paid: ${p.currencyType.symbol}${formatCurrency(p.fiatAmount)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }

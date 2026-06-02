@@ -69,7 +69,7 @@ class SellTokensViewModel @Inject constructor(
         val tokens = s.tokenAmount.toDoubleOrNull()
         if (tokens == null || tokens <= 0) { _state.value = s.copy(error = "Enter a valid amount"); return }
         val wallet = s.selectedWallet ?: run { _state.value = s.copy(error = "Select a wallet"); return }
-        if (tokens > wallet.balance) { _state.value = s.copy(error = "Insufficient balance. Available: ${wallet.currencyType.symbol}${formatCurrency(wallet.balance)}"); return }
+        if (tokens > wallet.balance) { _state.value = s.copy(error = "Insufficient balance. Available: ${formatTokens(wallet.balance, wallet.currencyType)}"); return }
         val rate = exchangeRates[wallet.currencyType] ?: 100.0
         val fiatReceived = tokens / rate
         viewModelScope.launch {
@@ -127,7 +127,7 @@ fun SellTokensScreen(onBack: () -> Unit, viewModel: SellTokensViewModel = hiltVi
             item {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = wallet?.let { "${it.name} (Balance: ${it.currencyType.symbol}${formatCurrency(it.balance)})" } ?: "Select Wallet",
+                        value = wallet?.let { "${it.name} (${formatTokens(it.balance, it.currencyType)})" } ?: "Select Wallet",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("From Wallet") },
@@ -141,7 +141,10 @@ fun SellTokensScreen(onBack: () -> Unit, viewModel: SellTokensViewModel = hiltVi
                     DropdownMenu(expanded = walletDropdown, onDismissRequest = { walletDropdown = false }) {
                         state.wallets.forEach { w ->
                             DropdownMenuItem(
-                                text = { Text("${w.name} (${w.currencyType.symbol}${formatCurrency(w.balance)})") },
+                                text = {
+                                    val r = exchangeRates[w.currencyType] ?: 100.0
+                                    Text("${w.name} · ${formatTokens(w.balance, w.currencyType)} (${w.currencyType.symbol}${formatCurrency(w.balance / r)})")
+                                },
                                 onClick = { viewModel.setWallet(w); walletDropdown = false }
                             )
                         }
@@ -153,7 +156,7 @@ fun SellTokensScreen(onBack: () -> Unit, viewModel: SellTokensViewModel = hiltVi
                     value = state.tokenAmount,
                     onValueChange = { viewModel.setAmount(it) },
                     label = { Text("Token Amount to Sell") },
-                    prefix = { Text(wallet?.currencyType?.symbol ?: "") },
+                    suffix = { Text(wallet?.currencyType?.tokenSymbol ?: "") },
                     isError = state.error != null,
                     modifier = Modifier.fillMaxWidth(), singleLine = true
                 )
@@ -164,9 +167,9 @@ fun SellTokensScreen(onBack: () -> Unit, viewModel: SellTokensViewModel = hiltVi
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("Sale Summary", fontWeight = FontWeight.Bold)
-                            DetailRow("Rate", "$rate ${wallet.currencyType.name} = 1 USD")
-                            DetailRow("Tokens to Sell", "${wallet.currencyType.symbol}${formatCurrency(tokens)}")
-                            DetailRow("You Receive (USD)", "$ ${formatCurrency(fiatEquivalent)}", isBold = true)
+                            DetailRow("Rate", "${rate} ${wallet.currencyType.tokenSymbol} = 1 ${wallet.currencyType.symbol}")
+                            DetailRow("Tokens to Sell", formatTokens(tokens, wallet.currencyType))
+                            DetailRow("You Receive", "${wallet.currencyType.symbol}${formatCurrency(fiatEquivalent)} (${formatTokens(tokens, wallet.currencyType)})", isBold = true)
                         }
                     }
                 }
@@ -194,7 +197,7 @@ fun SellTokensScreen(onBack: () -> Unit, viewModel: SellTokensViewModel = hiltVi
                                 Text(tx.counterpartyName, fontWeight = FontWeight.SemiBold)
                                 Text(formatDateTime(tx.createdAt), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Text("-${tx.currencyType.symbol}${formatCurrency(tx.amount)}", color = WalletRed500, fontWeight = FontWeight.Bold)
+                            Text("-${formatTokens(tx.amount, tx.currencyType)}", color = WalletRed500, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
