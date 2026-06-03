@@ -106,7 +106,7 @@ fun SendConfirmScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text("Sending", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
                     Text(
-                        "${s.sourceCurrencySymbol} ${formatCurrency(s.amount)} ${s.sourceCurrencyName}",
+                        "${formatCurrency(s.amount)} ${s.sourceCurrencyTokenSymbol}",
                         color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold
                     )
                 }
@@ -120,12 +120,12 @@ fun SendConfirmScreen(
                     DetailRow("From", s.sourceWalletName)
                     DetailRow("To", s.recipientName)
                     DetailRow("Address", s.recipientAddress.take(24) + "...")
-                    DetailRow("Balance Before", "${s.sourceCurrencySymbol} ${formatCurrency(s.sourceBalance)}")
+                    DetailRow("Balance Before", "${formatCurrency(s.sourceBalance)} ${s.sourceCurrencyTokenSymbol}")
                     HorizontalDivider(color = Divider)
-                    DetailRow("Amount", "${s.sourceCurrencySymbol} ${formatCurrency(s.amount)}")
-                    DetailRow("Network Fee (0.1%)", "${s.sourceCurrencySymbol} ${formatCurrency(fee)}")
+                    DetailRow("Amount", "${formatCurrency(s.amount)} ${s.sourceCurrencyTokenSymbol}")
+                    DetailRow("Network Fee (0.1%)", "${formatCurrency(fee)} ${s.sourceCurrencyTokenSymbol}")
                     HorizontalDivider(color = Divider)
-                    DetailRow("Total Deducted", "${s.sourceCurrencySymbol} ${formatCurrency(total)}", isBold = true)
+                    DetailRow("Total Deducted", "${formatCurrency(total)} ${s.sourceCurrencyTokenSymbol}", isBold = true)
                 }
             }
 

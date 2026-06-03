@@ -169,7 +169,7 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("Exchange Summary", fontWeight = FontWeight.Bold)
-                            DetailRow("Rate", "1 ${wallet.currencyType.symbol} = ${rate} ${wallet.currencyType.tokenSymbol}")
+                            DetailRow("Rate", "1 ${wallet.currencyType.symbol} = ${formatCurrency(rate)} ${wallet.currencyType.tokenSymbol}")
                             DetailRow("You Pay", "${wallet.currencyType.symbol}${formatCurrency(fiat)}")
                             DetailRow("You Receive", "${formatTokens(tokensToReceive, wallet.currencyType)} (${wallet.currencyType.symbol}${formatCurrency(fiat)})", isBold = true)
                         }

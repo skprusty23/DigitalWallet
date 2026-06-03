@@ -53,6 +53,7 @@ object SendState {
     var sourceWalletName: String = ""
     var sourceCurrencySymbol: String = ""
     var sourceCurrencyName: String = ""
+    var sourceCurrencyTokenSymbol: String = ""
     var sourceBalance: Double = 0.0
     var amount: Double = 0.0
 }
@@ -122,6 +123,7 @@ class SendTokensViewModel @Inject constructor(
         SendState.sourceWalletName = wallet.name
         SendState.sourceCurrencySymbol = wallet.currencyType.symbol
         SendState.sourceCurrencyName = wallet.currencyType.name
+        SendState.sourceCurrencyTokenSymbol = wallet.currencyType.tokenSymbol
         SendState.sourceBalance = wallet.balance
         SendState.amount = amt
         onReady()
@@ -242,7 +244,7 @@ fun SendTokensScreen(
                         value = state.amount,
                         onValueChange = { viewModel.setAmount(it) },
                         label = { Text("Amount") },
-                        prefix = { Text(state.selectedWallet?.currencyType?.symbol ?: "") },
+                        suffix = { Text(state.selectedWallet?.currencyType?.tokenSymbol ?: "") },
                         isError = state.amountError != null,
                         supportingText = state.amountError?.let { { Text(it) } },
                         modifier = Modifier.fillMaxWidth(), singleLine = true

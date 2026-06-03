@@ -167,9 +167,9 @@ fun SellTokensScreen(onBack: () -> Unit, viewModel: SellTokensViewModel = hiltVi
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("Sale Summary", fontWeight = FontWeight.Bold)
-                            DetailRow("Rate", "${rate} ${wallet.currencyType.tokenSymbol} = 1 ${wallet.currencyType.symbol}")
+                            DetailRow("Rate", "${formatCurrency(rate)} ${wallet.currencyType.tokenSymbol} = 1 ${wallet.currencyType.symbol}")
                             DetailRow("Tokens to Sell", formatTokens(tokens, wallet.currencyType))
-                            DetailRow("You Receive", "${wallet.currencyType.symbol}${formatCurrency(fiatEquivalent)} (${formatTokens(tokens, wallet.currencyType)})", isBold = true)
+                            DetailRow("You Receive", "${formatTokens(tokens, wallet.currencyType)} (${wallet.currencyType.symbol}${formatCurrency(fiatEquivalent)})", isBold = true)
                         }
                     }
                 }
