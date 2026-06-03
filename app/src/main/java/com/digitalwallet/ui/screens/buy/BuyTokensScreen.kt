@@ -131,7 +131,7 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
             item {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = wallet?.name ?: "Select Wallet",
+                        value = wallet?.let { "${it.name} (${formatTokens(it.balance, it.currencyType)})" } ?: "Select Wallet",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Destination Wallet") },
@@ -145,7 +145,7 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
                     DropdownMenu(expanded = walletDropdown, onDismissRequest = { walletDropdown = false }) {
                         state.wallets.forEach { w ->
                             DropdownMenuItem(
-                                text = { Text("${w.name} (${w.currencyType.name})") },
+                                text = { Text("${w.name} (${formatTokens(w.balance, w.currencyType)})") },
                                 onClick = { viewModel.setWallet(w); walletDropdown = false }
                             )
                         }
@@ -156,8 +156,7 @@ fun BuyTokensScreen(onBack: () -> Unit, viewModel: BuyTokensViewModel = hiltView
                 OutlinedTextField(
                     value = state.fiatAmount,
                     onValueChange = { viewModel.setFiatAmount(it) },
-                    label = { Text("Fiat Amount to Spend") },
-                    prefix = { Text(wallet?.currencyType?.symbol ?: "$") },
+                    label = { Text("Amount to Buy") },
                     suffix = { Text(wallet?.currencyType?.tokenSymbol ?: "USDT") },
                     isError = state.error != null,
                     modifier = Modifier.fillMaxWidth(), singleLine = true
